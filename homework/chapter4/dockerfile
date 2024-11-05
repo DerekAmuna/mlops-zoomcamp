@@ -1,0 +1,7 @@
+FROM agrigorev/zoomcamp-model:mlops-2024-3.10.13-slim
+
+COPY starter.py .
+
+RUN pip install pandas pyarrow scikit-learn
+
+ENTRYPOINT ["python3", "starter.py", "2023", "04"]

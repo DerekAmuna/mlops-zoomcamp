@@ -2,11 +2,7 @@ import requests
 
 url = "http://localhost:9696/predict"
 
-ride = {
-    "PULocationID": 10,
-    "DOLocationID": 130,
-    "trip_distance": 50
-}
+ride = {"PULocationID": 10, "DOLocationID": 130, "trip_distance": 50}
 
 
 response = requests.post(url, json=ride)
