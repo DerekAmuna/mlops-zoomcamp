@@ -43,10 +43,10 @@ def prepare_db():
     ) as conn:
         res = conn.execute(
             """
-            SELECT 1 FROM pg_database WHERE datname = 'test'
+            SELECT 1 FROM pg_database WHERE datname ='test'
         """
         )
-        if not res.fetchone():
+        if len(res.fetchall()) == 0:
             conn.execute("CREATE DATABASE test;")
         with psycopg.connect(
             host="localhost",
