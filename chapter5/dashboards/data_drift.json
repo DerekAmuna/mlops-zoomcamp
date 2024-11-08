@@ -18,7 +18,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 2,
+    "id": 1,
     "links": [],
     "panels": [
       {
@@ -37,16 +37,28 @@
               "axisColorMode": "text",
               "axisLabel": "",
               "axisPlacement": "auto",
-              "fillOpacity": 80,
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
               "gradientMode": "none",
               "hideFrom": {
                 "legend": false,
                 "tooltip": false,
                 "viz": false
               },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
               "lineWidth": 1,
+              "pointSize": 5,
               "scaleDistribution": {
                 "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
               },
               "thresholdsStyle": {
                 "mode": "off"
@@ -75,41 +87,36 @@
           "x": 0,
           "y": 0
         },
-        "id": 3,
+        "id": 1,
         "options": {
-          "barRadius": 0,
-          "barWidth": 0.97,
-          "fullHighlight": false,
-          "groupWidth": 0.7,
           "legend": {
             "calcs": [],
             "displayMode": "list",
             "placement": "bottom",
             "showLegend": true
           },
-          "orientation": "auto",
-          "showValue": "auto",
-          "stacking": "none",
           "tooltip": {
             "mode": "single",
             "sort": "none"
-          },
-          "xTickLabelRotation": 0,
-          "xTickLabelSpacing": 0
+          }
         },
         "pluginVersion": "11.3.0",
         "targets": [
           {
+            "datasource": {
+              "type": "grafana-postgresql-datasource",
+              "uid": "PCC52D03280B7034C"
+            },
             "editorMode": "builder",
             "format": "table",
-            "rawSql": "SELECT share_missing_values, \"timestamp\" FROM drift_metrics LIMIT 50 ",
+            "rawSql": "SELECT prediction_drift, \"timestamp\" FROM drift_metrics LIMIT 50 ",
             "refId": "A",
             "sql": {
               "columns": [
                 {
                   "parameters": [
                     {
-                      "name": "share_missing_values",
+                      "name": "prediction_drift",
                       "type": "functionParameter"
                     }
                   ],
@@ -138,8 +145,8 @@
             "table": "drift_metrics"
           }
         ],
-        "title": "Share Of Missing Values",
-        "type": "barchart"
+        "title": "Prediction Drift",
+        "type": "timeseries"
       },
       {
         "datasource": {
@@ -277,28 +284,16 @@
               "axisColorMode": "text",
               "axisLabel": "",
               "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 0,
+              "fillOpacity": 80,
               "gradientMode": "none",
               "hideFrom": {
                 "legend": false,
                 "tooltip": false,
                 "viz": false
               },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
               "lineWidth": 1,
-              "pointSize": 5,
               "scaleDistribution": {
                 "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
               },
               "thresholdsStyle": {
                 "mode": "off"
@@ -327,36 +322,41 @@
           "x": 0,
           "y": 8
         },
-        "id": 1,
+        "id": 3,
         "options": {
+          "barRadius": 0,
+          "barWidth": 0.97,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
           "legend": {
             "calcs": [],
             "displayMode": "list",
             "placement": "bottom",
             "showLegend": true
           },
+          "orientation": "auto",
+          "showValue": "auto",
+          "stacking": "none",
           "tooltip": {
             "mode": "single",
             "sort": "none"
-          }
+          },
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": 0
         },
         "pluginVersion": "11.3.0",
         "targets": [
           {
-            "datasource": {
-              "type": "grafana-postgresql-datasource",
-              "uid": "PCC52D03280B7034C"
-            },
             "editorMode": "builder",
             "format": "table",
-            "rawSql": "SELECT prediction_drift, \"timestamp\" FROM drift_metrics LIMIT 50 ",
+            "rawSql": "SELECT share_missing_values, \"timestamp\" FROM drift_metrics LIMIT 50 ",
             "refId": "A",
             "sql": {
               "columns": [
                 {
                   "parameters": [
                     {
-                      "name": "prediction_drift",
+                      "name": "share_missing_values",
                       "type": "functionParameter"
                     }
                   ],
@@ -385,8 +385,8 @@
             "table": "drift_metrics"
           }
         ],
-        "title": "Prediction Drift",
-        "type": "timeseries"
+        "title": "Share Of Missing Values",
+        "type": "barchart"
       }
     ],
     "preload": false,
@@ -404,6 +404,6 @@
     "timezone": "browser",
     "title": "NYC taxi data drift",
     "uid": "ce38qjrxwlb7kc",
-    "version": 6,
+    "version": 1,
     "weekStart": ""
   }
