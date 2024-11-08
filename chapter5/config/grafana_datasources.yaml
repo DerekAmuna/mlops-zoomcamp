@@ -7,7 +7,7 @@ datasources:
     type: postgres 
     access: proxy 
     url: db:5432 # the port must match the one in docker-compose.yml
-    database: test 
+    database: test
     user: postgres 
     secureJsonData:
       password: 'example' 

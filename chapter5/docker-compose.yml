@@ -1,5 +1,6 @@
 volumes:
   grafana_data: {}
+  postgres_data: {}
 
 networks:
   front-tier:
@@ -15,6 +16,9 @@ services:
       - "5432:5432"
     networks:
       - back-tier
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   adminer:
     image: adminer
@@ -32,6 +36,8 @@ services:
       - "3000:3000"
     volumes:
       - ./config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./dashboards:/var/lib/grafana/dashboards
     networks:
       - back-tier
       - front-tier

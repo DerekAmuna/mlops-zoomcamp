@@ -9,6 +9,13 @@ import pytz
 import pandas as pd
 import io
 import psycopg
+import joblib
+
+from evidently.report import Report
+from evidently import ColumnMapping
+from evidently.metrics import ColumnDriftMetric, DatasetDriftMetric, DatasetMissingValuesMetric, DatasetSummaryMetric
+
+from prefect import flow, task
 
 # logging
 logging.basicConfig(
@@ -20,19 +27,44 @@ rand = random.Random()
 
 # sql queries
 create_table_query = """
-DROP TABLE IF EXISTS metrics;
-CREATE TABLE IF NOT EXISTS metrics (
+DROP TABLE IF EXISTS drift_metrics;
+CREATE TABLE IF NOT EXISTS drift_metrics (
     timestamp timestamp NOT NULL,
-    value1 float NOT NULL,
-    value2 varchar NOT NULL,
-    value3 integer NOT NULL
+    prediction_drift float NOT NULL,
+    num_drifted_columns integer NOT NULL,
+    share_missing_values float NOT NULL
 );
 """
+# for keeping up metrics, the ref dat needs to be loaded with the model then 
+# the data is placed in buckets like daily or monthly yearly etc
+# allows for calc of data drift
+reference_data = pd.read_parquet('data/reference.parquet')
+with open ('models/lin_reg.bin', 'rb') as f_in:
+    model = joblib.load(f_in)
 
-# getting the database up and running. practically the same as what the docker
-# compose does
+raw_data = pd.read_parquet('data/green_tripdata_2022-02.parquet')
+begin = datetime.datetime(2022,2,1)
 
+num_features = [ "trip_distance"]
+cat_features = ["PULocationID", "DOLocationID"]
+target = ['duration']
 
+column_mapping = ColumnMapping(
+    prediction="preds",
+    numerical_features=num_features,
+    categorical_features=cat_features,
+    target=None,
+)
+
+report = Report(metrics=[
+    ColumnDriftMetric(column_name="preds"),
+    DatasetMissingValuesMetric(),
+    DatasetDriftMetric(),
+    DatasetSummaryMetric()
+])
+
+# connecrts to db.
+@task
 def prepare_db():
     with psycopg.connect(
         host="localhost",
@@ -57,30 +89,43 @@ def prepare_db():
         ) as conn:
             conn.execute(create_table_query)
 
+@task
+def calculate_metrics_postgresql(curr, i=1):  # CURR is a cursor object
+    current_data = raw_data[
+        (raw_data['lpep_pickup_datetime'] >= (begin + datetime.timedelta(days=i)))
+        & (raw_data['lpep_pickup_datetime'] < (begin + datetime.timedelta(days=i + 1)))
+    ]
 
-def calculate_metrics_postgresql(curr):  # CURR is a cursor object
-    value1 = rand.randint(0, 1000)
-    value2 = str(uuid.uuid4())
-    value3 = rand.random()
+    current_data.fillna(0, inplace=True)
+    current_data['preds'] = model.predict(current_data[num_features + cat_features])
+
+    report.run(reference_data=reference_data, current_data=current_data, column_mapping=column_mapping)
+
+    result = report.as_dict()
+
+    prediction_drift = result['metrics'][0]['result']['drift_score']
+    num_drifted_columns = result['metrics'][2]['result']['number_of_drifted_columns']
+    share_missing_values = result['metrics'][1]['result']['current']['share_of_missing_values']
 
     curr.execute(
         """
-        INSERT INTO metrics (timestamp, value1, value2, value3)
+        INSERT INTO drift_metrics (timestamp, prediction_drift, num_drifted_columns, share_missing_values)
         VALUES (%s, %s, %s, %s)
-    """, # inputtinf the timexone, and values as strings
-        (datetime.datetime.now(pytz.utc), value1, value2, value3)
+        """,
+        (begin + datetime.timedelta(days=i), prediction_drift, num_drifted_columns, share_missing_values)
     )
 
-def main():
+@flow
+def batch_monitoring_backfill():
     prepare_db()
     last_send = datetime.datetime.now(pytz.utc) - datetime.timedelta(seconds=SEND_TIMEOUT)
 
     with psycopg.connect(
         host="localhost", dbname="test", user="postgres", password="example", port=5432, autocommit=True
     ) as conn:
-        for i in range(0,100):
+        for i in range(0,27):
             with conn.cursor() as curr:
-                calculate_metrics_postgresql(curr)
+                calculate_metrics_postgresql(curr, i)
             
             new_send = datetime.datetime.now(pytz.utc)
             seconds_elapsed = (new_send - last_send).total_seconds()
@@ -91,4 +136,4 @@ def main():
             logging.info('data sent')
 
 if __name__ == "__main__":
-    main()
+    batch_monitoring_backfill()
