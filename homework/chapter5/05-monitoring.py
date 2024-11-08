@@ -2,7 +2,6 @@
 
 import datetime
 import time
-import random
 import logging
 import pytz
 import pandas as pd
