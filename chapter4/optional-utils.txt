@@ -1,0 +1,50 @@
+test kinesis stream
+aws kinesis put-record \
+--stream-name ${KINESIS_STREAM_INPUT} \
+--partition-key 1 \
+--data  $(echo -n '{"ride":{"PULocationID": 130, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}' | base64)
+
+
+shell function to quicken encoding added to ~/.zshrc
+function aws_b64() {
+    echo -n "$1" | base64
+}
+
+envoked as 
+aws_b64 'string to encode' 
+
+
+updated put-record stream
+ aws kinesis put-record \
+--stream-name ${KINESIS_STREAM_INPUT} \
+--partition-key 1 \
+--data  $(aws_b64 '{"ride":{"PULocationID": 131, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}')
+
+Viewing the output stream
+KINESIS_STREAM_OUTPUT='ride_preds'
+SHARD='shardId-000000000000'
+
+SHARD_ITERATOR=$(aws kinesis \
+    get-shard-iterator \
+    --shard-id ${SHARD} \
+    --shard-iterator-type TRIM_HORIZON \
+    --stream-name ${KINESIS_STREAM_OUTPUT} \
+    --query 'ShardIterator' \
+)
+
+RESULT=$(aws kinesis get-records --shard-iterator $SHARD_ITERATOR)
+
+echo ${RESULT} | jq -r '.Records[0].Data' | base64 --decode | jq
+
+# docker build config
+docker build -t stream-model-duration:v1 . 
+
+#docker run config
+docker run -it --rm \
+-p 8080:8080 \
+-e PREDICTIONS_STREAM_NAME=ride_preds \
+-e RUN_ID=e308ab2a149249a4b161cb428b4abc23 \
+-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+-e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+stream-model-duration:v1
