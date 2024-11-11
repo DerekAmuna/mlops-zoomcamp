@@ -10,7 +10,7 @@ event = {
                 "kinesisSchemaVersion": "1.0",
                 "partitionKey": "1",
                 "sequenceNumber": "49657540666418930171109502259426480070896488208763191298",
-                "data": "eyJyaWRlIjp7IlBVTG9jYXRpb25JRCI6IDEzMCwgIkRPTG9jYXRpb25JRCI6IDIwNSwgInRyaXBfZGlzdGFuY2UiOiAzLjY2fSwgInJpZGVfaWQiOiA0NTkzMDIwMDJ9",
+                "data": "eyJyaWRlIjp7IlBVTG9jYXRpb25JRCI6IDEyMSwgIkRPTG9jYXRpb25JRCI6IDEzNSwgInRyaXBfZGlzdGFuY2UiOiAzLjYzNn0sICJyaWRlX2lkIjogNDU5NDQzNTU1NTMwMjAwMn0=",
                 "approximateArrivalTimestamp": 1731198238.106
             },
             "eventSource": "aws:kinesis",
@@ -29,3 +29,4 @@ response = requests.post(url, json=event)
 
 # result = lambda_function.lambda_handler(event, None)
 print(response.json())
+
