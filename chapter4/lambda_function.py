@@ -6,6 +6,21 @@ import mlflow
 import numpy as np
 
 
+session = boto3.Session()
+credentials = session.get_credentials()
+
+# Access individual credentials
+AWS_ACCESS_KEY_ID = credentials.access_key
+AWS_SECRET_ACCESS_KEY = credentials.secret_key
+AWS_REGION = session.region_name
+
+
+os.environ['AWS_S3_ENDPOINT_URL'] = f'https://s3.{AWS_REGION}.amazonaws.com'
+
+# MLflow setup
+MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+
 RUN_ID = "e308ab2a149249a4b161cb428b4abc23"
 
 logged_model = f"s3://mlops-derek/1/{RUN_ID}/artifacts/model"
@@ -13,14 +28,14 @@ model = mlflow.pyfunc.load_model(logged_model)
 
 
 PREDICTIONS_STREAM_NAME = os.getenv('PREDICTIONS_STREAM_NAME', 'ride_preds')
-kinesis_client = boto3.client('kinesis', region_name=os.getenv('AWS_DEFAULT_REGION', 'eu-north-1'),
-                             aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-                             aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
+kinesis_client = boto3.client('kinesis', region_name=os.getenv('AWS_DEFAULT_REGION', AWS_REGION),
+                             )
 
 def predict(features):
     return model.predict(features)
 
 predictions_event = []
+
 
 def lambda_handler(event, context):
     for rec in event['Records']:
@@ -28,6 +43,7 @@ def lambda_handler(event, context):
         decoded_data = base64.b64decode(encoded_data).decode("utf-8")
         ride_event = json.loads(decoded_data)
         # print(f'Decode in JSON format:\n\n\n{ride_event}\n\n\n')
+        
 
         ride = ride_event['ride']
         ride_id = ride_event['ride_id']
