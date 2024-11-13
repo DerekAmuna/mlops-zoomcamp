@@ -165,9 +165,9 @@ cython_debug/
 *.pickle
 *.parquet
 *.db
-.pylintrc
-pyproject.toml
 
 mlruns/
 mlartifacts/
 .DS_Store
+.pylintrc
+pyproject.toml
