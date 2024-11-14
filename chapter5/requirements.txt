@@ -10,4 +10,3 @@ pandas
 numpy
 scikit - learn
 jupyter
-pytest
