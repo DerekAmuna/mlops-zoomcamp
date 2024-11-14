@@ -140,10 +140,6 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
 
 # Pyre type checker
 .pyre/
@@ -165,9 +161,61 @@ cython_debug/
 *.pickle
 *.parquet
 *.db
+*.bin
+.pylint
+.flake8
+pyproject.toml
+.env
+.venv
+ENV/
+
 
 mlruns/
 mlartifacts/
 .DS_Store
+
+.vscode/
+.cursor/
+*.code-workspace
+
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Data files
+*.csv
+*.xml
+*.xlsx
+*.xls
+*.h5
+*.hdf5
+*.sqlite
+
+# Logs and temporary files
+logs/
+temp/
+tmp/
+*.tmp
+*.bak
+
+.docker/
+docker-compose.override.yml
+
+.python-version
+.venv/
+venv/
+
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+coverage.xml
+.tox/
+.nox/
+htmlcov/
+
+.env.dev
+
+*.b
 .pylintrc
-pyproject.toml
