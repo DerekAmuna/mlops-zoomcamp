@@ -1,7 +1,5 @@
 FROM agrigorev/zoomcamp-model:mlops-2024-3.10.13-slim
 
-ENV MLFLOW_TRACKING_URI=http://127.0.0.1:5000
-
 COPY starter.py .
 
 RUN pip install pandas pyarrow scikit-learn
