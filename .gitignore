@@ -224,3 +224,4 @@ htmlcov/
 
 *.b
 .pylintrc
+.pre-commit-config.yaml
