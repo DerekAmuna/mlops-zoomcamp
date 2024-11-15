@@ -1,0 +1,21 @@
+services:
+  backend:
+    image: ${LOCAL_IMAGE_NAME}
+    ports:
+      - 8080:8080
+    volumes:
+      - ./model:/app/model
+    env_file:
+      - .env
+    environment:
+      - MODEL_LOCATION=/app/model
+      - TEST_RUN=False
+  kinesis:
+    image: localstack/localstack
+    ports:
+      - 4566:4566
+    env_file:
+      - .env
+    environment:
+      - SERVICES=kinesis
+
