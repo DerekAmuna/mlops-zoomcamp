@@ -1,0 +1,17 @@
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: ch6-localstack
+    ports:
+      - "4566:4566" # Gateway to access LocalStack services
+      - "4571:4571" # For Kinesis
+      - "9000:9000" # S3 service endpoint
+    environment:
+      - SERVICES=kinesis,lambda,ecr,s3,iam
+      - LAMBDA_EXECUTOR=docker
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - DEBUG=1
+    volumes:
+      - "./localstack-data:/var/lib/localstack" # Persistent state for LocalStack
+      - "/var/run/docker.sock:/var/run/docker.sock" # Required for Lambda execution
