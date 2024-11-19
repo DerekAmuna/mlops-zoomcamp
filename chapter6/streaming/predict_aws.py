@@ -13,7 +13,7 @@ mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 RUN_ID = os.getenv("RUN_ID")
 
 
-logged_model = f"s3://mlops-derek/1/{RUN_ID}/artifacts/model"
+logged_model = f"s3://mlops-derek/1/{RUN_ID}/artifacts/model"  # pylint: disable=invalid-name
 model = mlflow.pyfunc.load_model(logged_model)
 
 

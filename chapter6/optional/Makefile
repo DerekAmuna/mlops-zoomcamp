@@ -1,12 +1,7 @@
-.PHONY: init plan apply destroy clean validate
-
 # Variables
 ENV_FILE := .env
 include $(ENV_FILE)
 export
-
-# Default AWS region if not set
-AWS_DEFAULT_REGION ?= eu-north-1
 
 # Terraform variables
 TF_VARS := -var-file=vars/dev.tfvars

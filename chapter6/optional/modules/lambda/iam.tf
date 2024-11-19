@@ -1,5 +1,5 @@
 resource "aws_iam_role" "iam_lambda" {
-  name = "iam_${var.function_name}"
+  name = "iam_${var.lambda_function_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -21,7 +21,7 @@ EOF
 }
 
 resource "aws_iam_policy" "allow_kinesis_processing" {
-  name        = "allow_kinesis_processing_${var.function_name}"
+  name        = "allow_kinesis_processing_${var.lambda_function_name}"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -79,6 +79,7 @@ resource "aws_iam_role_policy" "inline_lambda_policy" {
 EOF
 }
 
+# IAM for CW
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_trigger_lambda_function" {
   statement_id  = "AllowExecutionFromCloudWatch"
@@ -89,7 +90,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_trigger_lambda_function" {
 }
 
 resource "aws_iam_policy" "allow_logging" {
-  name        = "allow_logging_${var.function_name}"
+  name        = "allow_logging_${var.lambda_function_name}"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -116,10 +117,12 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = aws_iam_policy.allow_logging.arn
 }
 
+# IAM for S3
 
 resource "aws_iam_policy" "lambda_s3_role_policy" {
-  name = "lambda_s3_policy_${var.function_name}"
+  name = "lambda_s3_policy_${var.lambda_function_name}"
   description = "IAM Policy for s3"
+  # TODO: change policies below to reflect get operation
 policy = <<EOF
 {
   "Version": "2012-10-17",

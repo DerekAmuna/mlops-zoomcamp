@@ -5,6 +5,7 @@ services:
       - 8080:8080
     volumes:
       - ./model:/app/model
+      - ../lambda_function.py:/app/lambda_function.py 
     env_file:
       - .env
     environment:

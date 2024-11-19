@@ -3,12 +3,13 @@ services:
     image: ${LOCAL_IMAGE_NAME}
     ports:
       - 8080:8080
+    env_file:
+      - .env
     volumes:
       - /Users/dna/mlops-zoomcamp/chapter6/streaming/integration-test/model:/app/model
     environment:
       - PREDICTIONS_STREAM_NAME=ride_preds
       - RUN_ID=${RUN_ID}
-      - AWS_DEFAULT_REGION=${AWS_REGION}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - MODEL_LOCATION=/app/model
-    env_file:
-      - .env
+    

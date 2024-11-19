@@ -40,7 +40,7 @@ repos:
       pass_filenames: false
       always_run: true
       args: [
-        # '/tests/'
+        '/tests/'
       ]
 repos:
   - repo: https://github.com/gitguardian/ggshield

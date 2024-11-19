@@ -1,6 +1,6 @@
 variable "name" {
   type = string
-  default = "mlops-zoomcamp"
+  default = "mlopszoomcamp"
 }
 
 variable "shard_count" {

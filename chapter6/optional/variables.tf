@@ -1,45 +1,42 @@
 variable "AWS_DEFAULT_REGION" {
   type = string
+  default = "us-east-1"
+}
+
+variable "region" {
+  type = string
+  default = "us-east-1"
 }
 
 variable "project_id" {
   type = string
-  default = "mlops-zoomcamp"
+  default = "mlopszoomcamp"
 }
 
 variable "source_stream_name" {
-  type = string
+  description = ""
 }
 
 variable "output_stream_name" {
-  type = string
+  description = ""
 }
 
-variable "model_bucket_name" {
-  type = string
-}
-
-variable "ecr_model_repo_name" {
-  type = string
-}
-
-variable "image_tag" {
-  type = string
+variable "model_bucket" {
+  description = "s3_bucket"
 }
 
 variable "lambda_function_local_path" {
-  type = string
+  description = ""
 }
 
-variable "docker_file_local_path" {
-  type = string
+variable "docker_image_local_path" {
+  description = ""
 }
 
-# variable "ecr_endpoint_url" {
-#   type = string
-#   default = "http://localhost:4566"
-# }
+variable "ecr_repo_name" {
+  description = ""
+}
 
-variable "function_name" {
-  type = string
+variable "lambda_function_name" {
+  description = ""
 }

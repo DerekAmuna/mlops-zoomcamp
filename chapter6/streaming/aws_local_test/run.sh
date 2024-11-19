@@ -2,18 +2,33 @@
 
 cd "$(dirname "$0")"
 
-LOCAL_TAG=$(date -I)
-export LOCAL_IMAGE_NAME="stream-model-duration:${LOCAL_TAG}"
 
 
-docker build -t ${LOCAL_IMAGE_NAME} ..
+if [ -z "${LOCAL_IMAGE_NAME}" ]; then
+    LOCAL_TAG=`date -I`
+    export LOCAL_IMAGE_NAME="stream-model-duration:${LOCAL_TAG}"
+    echo "LOCAL_IMAGE_NAME is not set"
+else
+    echo "LOCAL_IMAGE_NAME is set to ${LOCAL_IMAGE_NAME}"
+fi
 
-docker compose up -d
+if [ -z "${KINESIS_STREAM_NAME}" ]; then
+    echo "KINESIS_STREAM_NAME is not set"
+    export KINESIS_STREAM_NAME="ride_preds"
+else
+    echo "KINESIS_STREAM_NAME is set to ${KINESIS_STREAM_NAME}"
+fi
+
+# docker build -t ${LOCAL_IMAGE_NAME} ..
+
+docker compose up -d 
 
 sleep 1 #try 2 seconds if getting connection refused error
 
-aws --endpoint-url=${AWS_ENDPOINT_URL} kinesis create-stream \
- --stream-name ${PREDICTIONS_STREAM_NAME} --shard-count 1
+aws --endpoint-url=http://localhost:4566 kinesis create-stream \
+ --stream-name ${KINESIS_STREAM_NAME} --shard-count 1
+
+pip install pipenv
 
 pipenv run python test_docker.py
 

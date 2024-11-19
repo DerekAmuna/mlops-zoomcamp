@@ -1,8 +1,9 @@
 resource "aws_lambda_function" "kinesis_lambda" {
-  function_name = var.function_name
+  function_name = var.lambda_function_name
   role = aws_iam_role.iam_lambda.arn
   package_type = "Image"
   image_uri = var.image_uri
+  architectures = ["arm64"]
 
   tracing_config {
     mode = "Active"

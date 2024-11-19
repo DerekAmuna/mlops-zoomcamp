@@ -2,7 +2,8 @@ test kinesis stream
 aws kinesis put-record \
 --stream-name ${KINESIS_STREAM_INPUT} \
 --partition-key 1 \
---data  $(echo -n '{"ride":{"PULocationID": 130, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}' | base64)
+--cli-binary-format raw-in-base64-out \
+--data  '{"ride":{"PULocationID": 130, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}' 
 
 
 shell function to quicken encoding added to ~/.zshrc
