@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-cd "$(dirname "$0")"
+if [[ -z "${GITHUB_ACTIONS}" ]]; then
+    cd "$(dirname "$0")"
+fi
 
 if [ -z "${LOCAL_IMAGE_NAME}" ]; then
     LOCAL_TAG=`date -I`

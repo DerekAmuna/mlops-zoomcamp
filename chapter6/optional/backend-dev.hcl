@@ -1,5 +1,5 @@
 bucket = "tf-state-derek"
-key    = "terraform.tfstate"
+key    = "terraform-dev.tfstate"
 region = "us-east-1"
 encrypt = true
 use_path_style = true # for localstack

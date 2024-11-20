@@ -1,0 +1,80 @@
+name: CD
+
+on:
+  pull_request:
+    branches:
+      - 'develop'
+    paths:
+      - 'chapter6/**' #runs only on changes in chapter6 leave out if wanting to run on all like shinyapps run
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: us-east-1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        working-directory: 'chapter6'
+        run: |
+          pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev
+
+      - name: Run tests
+        working-directory: 'chapter6'
+        run: |
+          pipenv run pytest tests/
+
+      - name: Linting, Formatting
+        working-directory: 'chapter6'
+        run: |
+          pipenv run black .
+          pipenv run isort .
+          pipenv run pylint --recursive=y .
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      
+      - name: Integration tests
+        working-directory: 'chapter6/streaming/integration-test'
+        run: |
+          ./run.sh
+
+  tf-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform plan
+        id: plan
+        working-directory: 'chapter6/optional'
+        run: |
+          terraform init -backend-config=backend-prod.hcl -reconfigure
+          terraform plan -var-file="vars/prod.tfvars" -out=tfplan
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4

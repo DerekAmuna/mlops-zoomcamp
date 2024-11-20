@@ -11,7 +11,7 @@ LOCALSTACK_ENDPOINT := http://localhost:4566
 
 # Terraform commands with LocalStack configuration
 init:
-	terraform init -backend-config=backend.hcl -migrate-state
+	terraform init -backend-config=backend-dev.hcl -migrate-state
 
 plan: init
 	terraform plan $(TF_VARS)
@@ -27,6 +27,13 @@ create-bucket:
     --bucket tf-state-derek-mlops-zoomcamp \
     --region ${AWS_DEFAULT_REGION} \
     --create-bucket-configuration LocationConstraint=${AWS_DEFAULT_REGION}
+
+put-record:
+	aws kinesis put-record \
+	--stream-name ${KINESIS_STREAM_INPUT} \
+	--partition-key 1 \
+	--cli-binary-format raw-in-base64-out \
+	--data  '{"ride":{"PULocationID": 130, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}' 
 
 # LocalStack specific commands
 create-bucket-local:
