@@ -24,19 +24,19 @@ jobs:
           python-version: 3.11
 
       - name: Install dependencies
-        working-directory: 'chapter6'
+        working-directory: 'chapter6/streaming'
         run: |
           pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
 
       - name: Run tests
-        working-directory: 'chapter6'
+        working-directory: 'chapter6/streaming'
         run: |
           pipenv run pytest tests/
 
       - name: Linting, Formatting
-        working-directory: 'chapter6'
+        working-directory: 'chapter6/streaming'
         run: |
           pipenv run black .
           pipenv run isort .
