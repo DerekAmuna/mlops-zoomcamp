@@ -28,14 +28,14 @@ jobs:
         working-directory: 'chapter6/optional'
         run: |
           terraform init -backend-config=backend-prod.hcl -reconfigure
-          terraform plan -var-file="vars/prod.tfvars" -out=tfplan
+          terraform plan -var-file="vars/prod.tfvars" 
       
       - name: Terraform apply
         id: apply
         working-directory: 'chapter6/optional'
         if: ${{ steps.plan.outcome  }} == 'success'
         run: |
-          terraform apply tfplan -auto-approve -var-file="vars/prod.tfvars"
+          terraform apply -auto-approve -var-file="vars/prod.tfvars"
           echo "::set-output name=ecr_repo::$(terraform output ecr_repo | xargs)"
           echo "::set-output name=predictions_stream_name::$(terraform output predictions_stream_name | xargs)"
           echo "::set-output name=model_bucket::$(terraform output model_bucket | xargs)"
