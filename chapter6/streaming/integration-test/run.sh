@@ -14,7 +14,7 @@ fi
 
 docker build -t ${LOCAL_IMAGE_NAME} ..
 
-docker-compose up -d
+docker compose up -d
 
 sleep 2
 

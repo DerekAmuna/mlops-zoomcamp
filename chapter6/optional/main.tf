@@ -28,7 +28,7 @@ locals {
 }
 
 
-# ride_events
+
 module "source_kinesis_stream" {
   source = "./modules/kinesis"
   retention_period = 48
@@ -37,7 +37,7 @@ module "source_kinesis_stream" {
   tags = var.project_id
 }
 
-# ride_predictions
+
 module "output_kinesis_stream" {
   source = "./modules/kinesis"
   retention_period = 48
@@ -46,13 +46,13 @@ module "output_kinesis_stream" {
   tags = var.project_id
 }
 
-# model bucket
+
 module "s3_bucket" {
   source = "./modules/s3"
   bucket_name = "${var.model_bucket}-${var.project_id}"
 }
 
-# image registry
+
 module "ecr_image" {
    source = "./modules/ecr"
    ecr_repo_name = "${var.ecr_repo_name}_${var.project_id}"
@@ -73,7 +73,7 @@ module "lambda_function" {
   source_stream_arn = module.source_kinesis_stream.stream_arn
 }
 
-# For CI/CD
+
 output "lambda_function" {
   value     = "${var.lambda_function_name}_${var.project_id}"
 }
