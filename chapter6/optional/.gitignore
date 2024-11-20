@@ -25,7 +25,6 @@ terraform.rc
 
 localstack-data
 
-Pipfile
-Pipfile.lock
+
 
 .terraform.lock.hcl
