@@ -59,17 +59,17 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image_uri::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # Deploy
-      - name: Get model artifacts
-        id: get-model-artifacts
-        working-directory: "chapter6/streaming"
-        env:
-          MODEL_BUCKET_DEV: "mlflow-derek"
-          MODEL_BUCKET_PROD: ${{ steps.tf-apply.outputs.model_bucket }}
-        run: |
-          export RUN_ID=$(aws s3 ls s3://${MODEL_BUCKET_DEV}/1/ | sort | tail -n 1 | awk -F'/' '{print $1}' | awk '{print $2}')
-          aws s3 sync s3://${MODEL_BUCKET_DEV} s3://${MODEL_BUCKET_PROD}
-          echo "::set-output name=run_id::${RUN_ID}"
+      # Unnecessary, tf apply already updates the registry add only if needed
+      # - name: Get model artifacts
+      #   id: get-model-artifacts
+      #   working-directory: "chapter6/streaming"
+      #   env:
+      #     MODEL_BUCKET_DEV: "mlflow-derek"
+      #     MODEL_BUCKET_PROD: ${{ steps.tf-apply.outputs.model_bucket }}
+      #   run: |
+      #     export RUN_ID=$(aws s3 ls s3://${MODEL_BUCKET_DEV}/1/ | sort | tail -n 1 | awk -F'/' '{print $1}' | awk '{print $2}')
+      #     aws s3 sync s3://${MODEL_BUCKET_DEV} s3://${MODEL_BUCKET_PROD}
+      #     echo "::set-output name=run_id::${RUN_ID}"
 
       - name: Update Lambda
         env:
