@@ -4,7 +4,7 @@ include $(ENV_FILE)
 export
 
 # Terraform variables
-TF_VARS := -var-file=vars/dev.tfvars
+TF_VARS := -var-file=vars/prod.tfvars
 
 # LocalStack endpoint
 LOCALSTACK_ENDPOINT := http://localhost:4566
