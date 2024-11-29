@@ -189,7 +189,6 @@ Icon
 
 # Data files
 *.csv
-*.json
 *.xml
 *.xlsx
 *.xls
