@@ -6,12 +6,9 @@ resource "aws_ecr_repository" "repo" {
     scan_on_push = false
   }
 
-  # force_delete = true
+  force_delete = true
 }
 
-# In practice, the Image build-and-push step is handled separately by the CI/CD pipeline and not the IaC script.
-# But because the lambda config would fail without an existing Image URI in ECR,
-# we can also upload any base image to bootstrap the lambda config, unrelated to your Inference logic
 resource null_resource ecr_image {
    triggers = {
      python_file = md5(file(var.lambda_function_local_path))
@@ -20,7 +17,7 @@ resource null_resource ecr_image {
 
    provisioner "local-exec" {
      command = <<EOF
-             aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${var.account_id}.dkr.ecr.${var.region}.amazonaws.com
+             aws ecr get-login-password --region ${var.region} | docker login --password-stdin ${var.account_id}.dkr.ecr.${var.region}.amazonaws.com
              docker build --platform linux/arm64 -t ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag} .
              docker push ${aws_ecr_repository.repo.repository_url}:${var.ecr_image_tag}
          EOF
