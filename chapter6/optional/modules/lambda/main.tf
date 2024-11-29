@@ -26,6 +26,12 @@ resource "aws_lambda_event_source_mapping" "kinesis_mapping" {
   starting_position = "LATEST"
   depends_on = [ aws_iam_role_policy_attachment.kinesis_processing ]
 
+  enabled           = true
+  batch_size        = 1
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lambda_function_event_invoke_config" "kinesis_lambda_event" {

@@ -6,12 +6,10 @@ export
 # Terraform variables
 TF_VARS := -var-file=vars/prod.tfvars
 
-# LocalStack endpoint
-LOCALSTACK_ENDPOINT := http://localhost:4566
 
 # Terraform commands with LocalStack configuration
 init:
-	terraform init -backend-config=backend-dev.hcl -migrate-state
+	terraform init -backend-config=backend-prod.hcl -reconfigure
 
 plan: init
 	terraform plan $(TF_VARS)
