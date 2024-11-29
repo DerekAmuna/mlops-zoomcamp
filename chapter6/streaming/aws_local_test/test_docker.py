@@ -10,7 +10,7 @@ with open("event.json", "rt", encoding="utf-8") as f_in:
     event = json.load(f_in)
 
 
-url = os.getenv("LOCAL_STACK_TEST_URL")
+url = os.getenv("LOCAL_STACK_TEST_URL", "http://localhost:8080/2015-03-31/functions/function/invocations")
 actual_response = requests.post(url, json=event, timeout=10).json()
 print("actual response:")
 
@@ -20,7 +20,7 @@ expected_response = {
     "predictions": [
         {
             "model": "ride_duration_prediction_model",  # added s for failure testing
-            "version": os.getenv("RUN_ID"),
+            "version": "e308ab2a149249a4b161cb428b4abc23",
             "prediction": {
                 "ride_duration": 20.970334029909353,
                 "ride_id": 4594435555302002,
