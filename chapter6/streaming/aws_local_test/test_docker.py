@@ -10,7 +10,7 @@ with open("event.json", "rt", encoding="utf-8") as f_in:
     event = json.load(f_in)
 
 
-url = os.getenv("LOCAL_STACK_TEST_URL")
+url = os.getenv("LOCAL_STACK_TEST_URL",)
 actual_response = requests.post(url, json=event, timeout=10).json()
 print("actual response:")
 
