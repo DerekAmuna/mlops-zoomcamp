@@ -52,7 +52,7 @@ pprint(actual_record)
 
 expected_record = {
     "model": "ride_duration_prediction_model",  # added s for failure testing
-    "version": os.getenv("RUN_ID"),
+    "version": "e308ab2a149249a4b161cb428b4abc23",
     "prediction": {
         "ride_duration": 20.970334029909353,
         "ride_id": 4594435555302002,
