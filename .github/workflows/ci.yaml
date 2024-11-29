@@ -1,4 +1,4 @@
-name: CD
+name: CI
 
 on:
   pull_request:
@@ -50,10 +50,10 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       
       # not working as deleted s3 bucket
-      # - name: Integration tests
-      #   working-directory: 'chapter6/streaming/integration-test'
-      #   run: |
-      #     ./run.sh
+      - name: Integration tests
+        working-directory: 'chapter6/streaming/integration-test'
+        run: |
+          ./run.sh
 
   tf-plan:
     runs-on: ubuntu-latest
