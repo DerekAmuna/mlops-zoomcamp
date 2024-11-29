@@ -51,7 +51,7 @@ jobs:
       
       # not working as deleted s3 bucket
       - name: Integration tests
-        working-directory: 'chapter6/streaming/integration-test'
+        working-directory: 'chapter6/streaming/aws_local_test'
         run: |
           ./run.sh
 
