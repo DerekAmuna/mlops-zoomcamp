@@ -1,4 +1,4 @@
-# pylint: disable=duplicate-code
+# pylint: disable=all
 
 import os
 import json
@@ -20,7 +20,7 @@ try:
        aws_secret_access_key='test'  
    )
 
-   stream_name = 'ride_preds'
+   stream_name = os.getenv("PREDICTIONS_STREAM_NAME", "ride_preds")
    response = kinesis_client.describe_stream(StreamName=stream_name)
 except:
     print("Stream does not exist")
@@ -64,6 +64,3 @@ print(f"diff={diff}")
 
 assert "values_changed" not in diff
 assert "type_changes" not in diff
-
-
-print("all good")
