@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
-
-cd "$(dirname "$0")"
+if [[ -z "${GITHUB_ACTIONS}" ]]; then
+    cd "$(dirname "$0")"
+fi
 
 
 
