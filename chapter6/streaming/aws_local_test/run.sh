@@ -2,6 +2,7 @@
 if [[ -z "${GITHUB_ACTIONS}" ]]; then
     cd "$(dirname "$0")"
 fi
+pwd
 
 
 
@@ -20,7 +21,7 @@ else
     echo "KINESIS_STREAM_NAME is set to ${KINESIS_STREAM_NAME}"
 fi
 
-# docker build -t ${LOCAL_IMAGE_NAME} ..
+docker build -t ${LOCAL_IMAGE_NAME} ..
 
 docker compose up -d 
 
