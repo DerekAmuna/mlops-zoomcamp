@@ -4,7 +4,7 @@
 # fi
 # pwd
 
-
+aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
 if [ -z "${LOCAL_IMAGE_NAME}" ]; then
     LOCAL_TAG=`date -I`
@@ -21,11 +21,12 @@ else
     echo "KINESIS_STREAM_NAME is set to ${KINESIS_STREAM_NAME}"
 fi
 
-docker build -t ${LOCAL_IMAGE_NAME} ..
+# docker build -t ${LOCAL_IMAGE_NAME} ..
+docker build --pull -t ${LOCAL_IMAGE_NAME} ..
 
 docker compose up -d 
 
-sleep 1 #try 2 seconds if getting connection refused error
+sleep 2 #try 2 seconds if getting connection refused error
 
 aws --endpoint-url=http://localhost:4566 kinesis create-stream \
  --stream-name ${KINESIS_STREAM_NAME} --shard-count 1

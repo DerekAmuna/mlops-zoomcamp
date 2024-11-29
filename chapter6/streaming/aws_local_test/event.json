@@ -13,8 +13,8 @@
             "eventID": "shardId-000000000000:49657540666418930171109502259426480070896488208763191298",
             "eventName": "aws:kinesis:record",
             "invokeIdentityArn": "arn:aws:iam::361769579073:role/lambda-kinesis-role",
-            "awsRegion": "eu-north-1",
-            "eventSourceARN": "arn:aws:kinesis:eu-north-1:361769579073:stream/ride_preds"
+            "awsRegion": "us-east-1",
+            "eventSourceARN": "arn:aws:kinesis:us-east-1:361769579073:stream/ride_preds"
         }
     ]
 }
