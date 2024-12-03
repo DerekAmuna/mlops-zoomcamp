@@ -1,0 +1,112 @@
+name: CD-Deploy
+on:
+  push:
+    branches:
+      - 'project'
+
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+
+      - name: TF plan
+        id: tf-plan
+        working-directory: 'projects/infrastructure'
+        run: |
+          terraform init -backend-config=backend.hcl -reconfigure
+          terraform plan -var-file=vars/prod.tfvars
+
+      - name: TF Apply
+        id: tf-apply
+        working-directory: 'projects/infrastructure'
+        if: ${{ steps.tf-plan.outcome }} == 'success'
+        run: |
+          terraform apply -auto-approve -var-file=vars/prod.tfvars
+          echo "::set-output name=ecr_repo::$(terraform output ecr_repo | xargs)"
+          echo "::set-output name=predictions_stream_name::$(terraform output predictions_stream_name | xargs)"
+          echo "::set-output name=model_bucket::$(terraform output model_bucket | xargs)"
+          echo "::set-output name=lambda_function::$(terraform output lambda_function | xargs)"
+
+      # Build-Push
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image-step
+        working-directory: "projects"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ steps.tf-apply.outputs.ecr_repo }}
+          IMAGE_TAG: "latest"   
+        run: |
+          docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image_uri::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Copy model to production bucket
+        run: |
+          ./projects/copy_prod_model.sh
+
+      - name: Update Lambda
+        env:
+          LAMBDA_FUNCTION: ${{ steps.tf-apply.outputs.lambda_function }}
+          PREDICTIONS_STREAM_NAME: ${{ steps.tf-apply.outputs.predictions_stream_name }}
+          MODEL_BUCKET: ${{ steps.tf-apply.outputs.model_bucket }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-1"
+          AWS_ENDPOINT_URL: "https://s3.us-east-1.amazonaws.com"
+        run: |
+          # First verify AWS credentials
+          aws sts get-caller-identity
+          
+          # Get the run ID
+          RUN_ID=$(aws ssm get-parameter --name "/project/run_id" --query "Parameter.Value" --output text)
+          echo "Run ID: $RUN_ID"
+          
+          VARIABLES=$(cat <<EOF
+          {
+            "Variables": {
+              "PREDICTIONS_STREAM_NAME": "$PREDICTIONS_STREAM_NAME",
+              "MODEL_BUCKET": "$MODEL_BUCKET",
+              "RUN_ID": "$RUN_ID"
+            }
+          }
+          EOF
+          )
+          
+          STATE=$(aws lambda get-function --function-name $LAMBDA_FUNCTION --region "us-east-1" --query 'Configuration.LastUpdateStatus' --output text)
+          while [[ "$STATE" == "InProgress" ]]
+          do
+              echo "sleep 5sec ...."
+              sleep 5s
+              STATE=$(aws lambda get-function --function-name $LAMBDA_FUNCTION --region "us-east-1" --query 'Configuration.LastUpdateStatus' --output text)
+              echo $STATE
+          done
+
+          aws lambda update-function-configuration \
+            --function-name $LAMBDA_FUNCTION \
+            --environment "$VARIABLES"
+
+      - name: Kill Infrastructure
+        if: always()
+        working-directory: projects/infrastructure
+        run: |
+          sleep 500
+          terraform destroy -auto-approve -var-file=vars/prod.tfvars
