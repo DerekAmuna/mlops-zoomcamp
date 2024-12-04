@@ -3,3 +3,7 @@ numpy
 scikit-learn
 boto3
 mlflow
+imblearn
+xgboost
+pingouin
+python-dotenv
