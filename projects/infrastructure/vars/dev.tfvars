@@ -1,0 +1,11 @@
+AWS_DEFAULT_REGION = "us-east-1"
+region = "us-east-1"
+source_stream_name = "wine_events"
+output_stream_name = "wine_preds"
+ecr_repo_name = "wine_pred-dev-model"
+model_bucket = "wine-model"
+image_tag = "latest"
+lambda_function_local_path = "../lambda_function.py"
+docker_image_local_path = "../Dockerfile"
+
+lambda_function_name = "wine_quality_pred_model"

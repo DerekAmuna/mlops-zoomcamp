@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+numpy = "*"
+scikit-learn = "*"
+boto3 = "*"
+mlflow = "*"
+ipykernel = "*"
+seaborn = "*"
+pingouin = "*"
+python-dotenv = "*"
+xgboost = "*"
+imblearn = "*"
+
+[dev-packages]
+pytest = "*"
+pylint = "*"
+black = {extras = ["jupyter"], version = "*"}
+isort = "*"
