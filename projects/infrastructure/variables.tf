@@ -1,31 +1,42 @@
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-east-1"
+variable "AWS_DEFAULT_REGION" {
+  type = string
+  default = "us-east-1"
 }
 
-variable "prod_bucket_name" {
-  description = "Name of the S3 bucket for production model"
-  type        = string
+variable "region" {
+  type = string
+  default = "us-east-1"
 }
 
-variable "kinesis_input_stream_name" {
-  description = "Name of the Kinesis input stream"
-  type        = string
+variable "project_id" {
+  type = string
+  default = "mlopszoomcamp"
 }
 
-variable "kinesis_output_stream_name" {
-  description = "Name of the Kinesis output stream"
-  type        = string
+variable "source_stream_name" {
+  description = ""
 }
 
-variable "kinesis_shard_count" {
-  description = "Number of shards for the Kinesis stream"
-  type        = number
-  default     = 1
+variable "output_stream_name" {
+  description = ""
 }
 
-variable "ecr_repository_name" {
-  description = "Name of the ECR repository"
-  type        = string
+variable "model_bucket" {
+  description = "s3_bucket"
+}
+
+variable "lambda_function_local_path" {
+  description = ""
+}
+
+variable "docker_image_local_path" {
+  description = ""
+}
+
+variable "ecr_repo_name" {
+  description = ""
+}
+
+variable "lambda_function_name" {
+  description = ""
 }

@@ -1,17 +1,11 @@
-resource "aws_ssm_parameter" "mlflow_run_id" {
-  name  = "/wine-quality/mlflow-run-id"
-  type  = "String"
-  value = var.mlflow_run_id
-}
-
 resource "aws_ssm_parameter" "model_bucket" {
-  name  = "/wine-quality/model-bucket"
+  name  = "/project/model-bucket"
   type  = "String"
-  value = var.model_bucket_name
+  value = module.s3_bucket.name
 }
 
-resource "aws_ssm_parameter" "experiment_id" {
-  name  = "/wine-quality/experiment-id"
+resource "aws_ssm_parameter" "predictions_stream" {
+  name  = "/project/predictions-stream"
   type  = "String"
-  value = var.experiment_id
-} 
+  value = module.output_wine_stream.stream_name
+}

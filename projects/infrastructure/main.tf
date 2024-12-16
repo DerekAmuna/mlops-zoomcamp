@@ -1,78 +1,76 @@
 terraform {
-  required_version = "1.9.8"
+  required_version = ">= 1.9.8"
   backend "s3" {}
 }
 
 provider "aws" {
-  region = var.aws_region
 }
 
 data "aws_caller_identity" "current" {}
 
+locals {
+  account_id = data.aws_caller_identity.current.account_id 
+}
+
+
+
+module "source_wine_stream" {
+  source = "./modules/kinesis"
+  retention_period = 48
+  shard_count = 2
+  name = "${var.source_stream_name}-${var.project_id}"
+  tags = var.project_id
+}
+
+
+module "output_wine_stream" {
+  source = "./modules/kinesis"
+  retention_period = 48
+  shard_count = 2
+  name = "${var.output_stream_name}-${var.project_id}"
+  tags = var.project_id
+}
+
+
 module "s3_bucket" {
   source = "./modules/s3"
-  bucket_name = var.prod_bucket_name
+  bucket_name = "${var.model_bucket}"
 }
 
-# IAM role and policies
-module "iam" {
-  source = "./modules/iam"
-  prod_model_bucket_arn = module.s3_bucket.prod_model_bucket_arn
-  mlflow_bucket_arn = module.s3_bucket.mlflow_bucket_arn
-  input_stream_arn = module.wine_input_stream.stream_arn
-  output_stream_arn = module.wine_output_stream.stream_arn
-  ecr_repository_arn = module.ecr.repository_arn
+
+module "ecr_image" {
+   source = "./modules/ecr"
+   ecr_repo_name = "${var.ecr_repo_name}_${var.project_id}"
+   account_id = local.account_id
+   lambda_function_local_path = var.lambda_function_local_path
+   docker_image_local_path = var.docker_image_local_path
+   region = var.region
 }
 
-# kinesis input stream
-module "wine_input_stream" {
-  source = "./modules/kinesis"
-  kinesis_stream_name = var.kinesis_input_stream_name
-  kinesis_shard_count = var.kinesis_shard_count
-}
-
-module "wine_output_stream" {
-  source = "./modules/kinesis"
-  kinesis_stream_name = var.kinesis_output_stream_name
-  kinesis_shard_count = var.kinesis_shard_count
-}
-
-module "ecr" {
-  source = "./modules/ecr"
-  ecr_repository_name = var.ecr_repository_name
-  ecr_image_tag = "latest"
-  lambda_function_local_path = "../lambda/lambda_function.py"
-  docker_image_local_path = "../lambda/Dockerfile"
-  account_id = data.aws_caller_identity.current.account_id
-  region = var.aws_region
-}
-
-module "lambda" {
+module "lambda_function" {
   source = "./modules/lambda"
-  prod_bucket_name = var.prod_bucket_name
-  output_stream_name = var.kinesis_output_stream_name
-  lambda_role_arn = module.iam.lambda_role_arn
-  image_uri = module.ecr.image_uri
-  input_stream_arn = module.wine_input_stream.stream_arn
+  image_uri = module.ecr_image.image_uri
+  lambda_function_name = "${var.lambda_function_name}"
+  model_bucket = module.s3_bucket.name
+  output_stream_name = "${var.output_stream_name}"
+  output_stream_arn = module.output_wine_stream.stream_arn
+  source_stream_name = "${var.source_stream_name}"
+  source_stream_arn = module.source_wine_stream.stream_arn
 }
 
-# Outputs
-output "s3_bucket_name" {
-  description = "Name of the S3 bucket"
-  value       = var.prod_bucket_name
+
+output "lambda_function" {
+  value     = "${var.lambda_function_name}"
 }
 
-output "input_stream_name" {
-  description = "Name of the Kinesis input stream"
-  value       = var.kinesis_input_stream_name
+output "model_bucket" {
+  value = module.s3_bucket.name
 }
 
-output "output_stream_name" {
-  description = "Name of the Kinesis output stream"
-  value       = var.kinesis_output_stream_name
+output "predictions_stream_name" {
+  value     = "${var.output_stream_name}"
 }
 
-output "image_uri" {
-  description = "URI of the ECR image"
-  value       = module.ecr.image_uri
+output "ecr_repo" {
+  value = "${var.ecr_repo_name}"
 }

@@ -12,3 +12,9 @@ plan_prod: init
 
 apply_prod: init
 	terraform apply -var-file=vars/prod.tfvars -auto-approve
+
+destroy_dev: init
+	terraform destroy -var-file=vars/dev.tfvars -auto-approve
+
+destroy_prod: init
+	terraform destroy -var-file=vars/prod.tfvars -auto-approve
