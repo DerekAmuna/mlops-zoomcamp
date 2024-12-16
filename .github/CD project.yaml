@@ -69,7 +69,6 @@ jobs:
           python save_best_run_id.py
 
       - name: Update Lambda
-        # needs: get-run-id
         env:
           LAMBDA_FUNCTION: ${{ steps.tf-apply.outputs.lambda_function }}
           PREDICTIONS_STREAM_NAME: ${{ steps.tf-apply.outputs.predictions_stream_name }}
