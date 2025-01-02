@@ -65,7 +65,28 @@ jobs:
       - name: Run integration tests
         working-directory: projects/tests/integration_test
         run: |
-          ./run.sh      
+          pip install pipenv
+          
+          # Set up cache for pipenv
+          PIPENV_CACHE_DIR=$(pipenv --where)/.cache
+          echo "PIPENV_CACHE_DIR=$PIPENV_CACHE_DIR" >> $GITHUB_ENV
+          
+          # Restore cache
+          if [ -d "$PIPENV_CACHE_DIR" ]; then
+            echo "Restoring pipenv cache"
+            cp -r "$PIPENV_CACHE_DIR" /tmp/pipenv_cache
+          fi
+          
+          pipenv install
+          
+          # Save cache
+          if [ -d "$PIPENV_CACHE_DIR" ]; then
+            echo "Saving pipenv cache"
+            mkdir -p /tmp/pipenv_cache
+            cp -r "$PIPENV_CACHE_DIR" /tmp/pipenv_cache
+          fi
+          
+          ./run.sh
 
       - name: Update Lambda
         env:
