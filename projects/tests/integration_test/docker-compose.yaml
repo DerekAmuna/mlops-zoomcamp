@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: ${LOCAL_IMAGE_NAME}
+    ports:
+      - "8080:8080"
+    environment:
+      - PREDICTIONS_STREAM_NAME=ride_preds
+      - RUN_ID=1542fc238fef40ddae60538ed932c35b
+      - AWS_DEFAULT_REGION=us-east-1
+      - MODEL_LOCATION=/app/model
+      - KINESIS_ENDPOINT_URL=http://kinesis:4566/
+      - KINESIS_URL=http://localhost:4566/
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - LOCAL_STACK_TEST_URL=http://localhost:8080/2015-03-31/functions/function/invocations
+    volumes:
+      - "./model:/app/model"
+      - "../lambda_function.py:/app/lambda_function.py"
+  kinesis:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=kinesis
+ 
+  
