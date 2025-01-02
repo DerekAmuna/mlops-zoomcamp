@@ -22,7 +22,11 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-
+      
+      - name: Run integration tests
+        working-directory: projects/tests/integration_test
+        run: |
+          ./run.sh
 
       - name: TF plan
         id: tf-plan
