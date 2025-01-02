@@ -5,7 +5,7 @@ import base64
 import boto3
 import mlflow
 import boto3
-ssm = boto3.client('ssm', region_name='us-east-1')
+# ssm = boto3.client('ssm', region_name='us-east-1')
 
 def get_model_location(run_id):
     model_location = os.getenv("MODEL_LOCATION")
@@ -40,13 +40,13 @@ class ModelService:
 
     def prepare_features(self, wine):
         features = {}
-        features["fixed_acidity"] = wine["fixed_acidity"]
-        features["volatile_acidity"] = wine["volatile_acidity"] 
-        features["citric_acid"] = wine["citric_acid"]
-        features["residual_sugar"] = wine["residual_sugar"]
+        features["fixed acidity"] = wine["fixed_acidity"]
+        features["volatile acidity"] = wine["volatile_acidity"] 
+        features["citric acid"] = wine["citric_acid"]
+        features["residual sugar"] = wine["residual_sugar"]
         features["chlorides"] = wine["chlorides"]
-        features["free_sulfur_dioxide"] = wine["free_sulfur_dioxide"]
-        features["total_sulfur_dioxide"] = wine["total_sulfur_dioxide"]
+        features["free sulfur dioxide"] = wine["free_sulfur_dioxide"]
+        features["total sulfur dioxide"] = wine["total_sulfur_dioxide"]
         features["density"] = wine["density"]
         features["pH"] = wine["pH"]
         features["sulphates"] = wine["sulphates"]

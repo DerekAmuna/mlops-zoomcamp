@@ -15,6 +15,7 @@ pingouin = "*"
 python-dotenv = "*"
 xgboost = "*"
 imblearn = "*"
+requests = "*"
 
 [dev-packages]
 pytest = "*"

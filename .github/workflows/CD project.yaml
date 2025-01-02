@@ -22,11 +22,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-      
-      - name: Run integration tests
-        working-directory: projects/tests/integration_test
-        run: |
-          ./run.sh
 
       - name: TF plan
         id: tf-plan
@@ -66,6 +61,11 @@ jobs:
       - name: Copy model to production bucket
         run: |
           ./projects/copy_prod_model.sh
+
+      - name: Run integration tests
+        working-directory: projects/tests/integration_test
+        run: |
+          ./run.sh      
 
       - name: Update Lambda
         env:

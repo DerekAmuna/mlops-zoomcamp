@@ -41,7 +41,7 @@ pip install pipenv
 #     docker compose down
 #     exit $ERROR_CODE
 # fi
-
+cd tests/integration_test
 pipenv run python test_lambda.py
 
 ERROR_CODE=$?
