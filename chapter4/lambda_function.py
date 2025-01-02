@@ -1,10 +1,11 @@
-import json
+
 import base64
-import boto3
+import json
 import os
+
+import boto3
 import mlflow
 import numpy as np
-
 
 session = boto3.Session()
 credentials = session.get_credentials()
