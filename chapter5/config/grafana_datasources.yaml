@@ -1,0 +1,16 @@
+# config file version
+apiVersion: 1
+
+# list of datasources 
+datasources:
+  - name: PostgreSQL
+    type: postgres 
+    access: proxy 
+    url: db:5432 # the port must match the one in docker-compose.yml
+    database: test
+    user: postgres 
+    secureJsonData:
+      password: 'example' 
+    jsonData:
+      sslmode: 'disable'
+      database: 'test'
