@@ -5,10 +5,10 @@ name = "pypi"
 
 [packages]
 pandas = "*"
-numpy = "*"
-scikit-learn = "*"
+numpy = "==2.1.3"
+scikit-learn = "==1.5.2*"
 boto3 = "*"
-mlflow = "*"
+mlflow = "==2.18.0"
 ipykernel = "*"
 seaborn = "*"
 pingouin = "*"
@@ -19,6 +19,7 @@ requests = "*"
 
 [dev-packages]
 pylint = "*"
-black = {extras = ["jupyter"], version = "*"}
-isort = "*"
 pytest = "*"
+black = "*"
+isort = "*"
+deepdiff = "*"

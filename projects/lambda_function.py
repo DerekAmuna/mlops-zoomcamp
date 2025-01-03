@@ -23,7 +23,7 @@ def init_model_service():
             # Production configuration
             ssm = boto3.client('ssm')
             model_service = model.init(
-                prediction_stream_name=ssm.get_parameter(Name='/project/prediction_stream_name')['Parameter']['Value'],
+                prediction_stream_name=ssm.get_parameter(Name='/project/predictions_stream_name')['Parameter']['Value'],
                 run_id=ssm.get_parameter(Name='/project/run_id')['Parameter']['Value'],
                 test_run=False
             )
@@ -39,4 +39,6 @@ def init_model_service():
 model_service = init_model_service()
 
 def lambda_handler(event, context):
-    return model_service.lambda_handler(event)
+    preds = model_service.lambda_handler(event) 
+    print(preds)
+    return preds

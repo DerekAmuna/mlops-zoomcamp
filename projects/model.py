@@ -1,11 +1,9 @@
-import os
-import json
 import base64
-
+import json
+import os
 import boto3
 import mlflow
-import boto3
-# ssm = boto3.client('ssm', region_name='us-east-1')
+
 
 def get_model_location(run_id):
     model_location = os.getenv("MODEL_LOCATION")
@@ -41,7 +39,7 @@ class ModelService:
     def prepare_features(self, wine):
         features = {}
         features["fixed acidity"] = wine["fixed_acidity"]
-        features["volatile acidity"] = wine["volatile_acidity"] 
+        features["volatile acidity"] = wine["volatile_acidity"]
         features["citric acid"] = wine["citric_acid"]
         features["residual sugar"] = wine["residual_sugar"]
         features["chlorides"] = wine["chlorides"]
@@ -108,7 +106,7 @@ def create_kinesis_client():
     endpoint_url = os.getenv("KINESIS_ENDPOINT_URL")
 
     if endpoint_url is None:
-        return boto3.client("kinesis")
+        return boto3.client("kinesis", region_name="us-east-1")
 
     return boto3.client("kinesis", endpoint_url=endpoint_url)
 

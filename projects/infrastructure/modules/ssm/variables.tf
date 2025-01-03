@@ -12,3 +12,8 @@ variable "experiment_id" {
   description = "ID of the mlflow experiment"
   type        = string
 }
+
+variable "output_stream_name" {
+  description = "Name of the output stream"
+  type        = string
+}

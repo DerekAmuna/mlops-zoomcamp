@@ -21,7 +21,8 @@ resource "aws_lambda_function" "kinesis_lambda" {
     }
   }
 
-  timeout = 100
+  timeout = 300
+  memory_size = 1024
 }
 
 resource "aws_lambda_event_source_mapping" "kinesis_mapping" {

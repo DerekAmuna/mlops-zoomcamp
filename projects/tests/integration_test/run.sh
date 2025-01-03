@@ -24,25 +24,13 @@ fi
 # docker build -t ${LOCAL_IMAGE_NAME} ..
 docker build --pull -t ${LOCAL_IMAGE_NAME} ../..
 
-docker compose -f docker-compose.yml up -d
+docker compose -f docker-compose.yaml up -d
 
-sleep 5 #try 2 seconds if getting connection refused error
+sleep 20 #try 2 seconds if getting connection refused error
 
+pip install pipenv --dev
 
-
-pip install pipenv
-
-# pipenv run python test_docker.py
-
-# ERROR_CODE=$?
-
-# if [ $ERROR_CODE -ne 0 ]; then
-#     docker compose logs
-#     docker compose down
-#     exit $ERROR_CODE
-# fi
-cd tests/integration_test
-pipenv run python test_lambda.py
+pipenv run python lambda_tst.py
 
 ERROR_CODE=$?
 

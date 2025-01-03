@@ -18,7 +18,7 @@ module "source_wine_stream" {
   source = "./modules/kinesis"
   retention_period = 48
   shard_count = 2
-  name = "${var.source_stream_name}-${var.project_id}"
+  name = "${var.source_stream_name}"
   tags = var.project_id
 }
 
@@ -27,7 +27,7 @@ module "output_wine_stream" {
   source = "./modules/kinesis"
   retention_period = 48
   shard_count = 2
-  name = "${var.output_stream_name}-${var.project_id}"
+  name = "${var.output_stream_name}"
   tags = var.project_id
 }
 
@@ -59,7 +59,14 @@ module "lambda_function" {
   source_stream_arn = module.source_wine_stream.stream_arn
 }
 
-
+module "ssm_parameters" {
+  source = "./modules/ssm"
+  
+  output_stream_name = var.output_stream_name
+  mlflow_run_id = "1542fc238fef40ddae60538ed932c35b"
+  model_bucket_name = var.model_bucket
+  experiment_id = "1"  
+}
 output "lambda_function" {
   value     = "${var.lambda_function_name}"
 }
