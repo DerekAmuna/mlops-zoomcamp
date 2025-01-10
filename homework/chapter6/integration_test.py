@@ -3,6 +3,9 @@ import pandas as pd
 from datetime import datetime
 import os
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 
@@ -52,7 +55,7 @@ df_input.to_parquet(
     input_file, engine="pyarrow", compression=None, index=False, storage_options=options
 )
 
-response = s3_client.head_object(Bucket="nyc-duration", Key="in/2023/01.parquet")
+response = s3_client.head_object(Bucket="nyc-duration", Key="in/2023-01.parquet")
 
 file_size = response["ContentLength"]
 print(f"File size: {file_size} bytes")

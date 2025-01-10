@@ -4,8 +4,9 @@ import sys
 import pickle
 import pandas as pd
 import os
+from dotenv import load_dotenv
 
-
+load_dotenv()
 
 def get_input_path(year, month):
     default_input_pattern = f"https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{year:04d}-{month:02d}.parquet"
