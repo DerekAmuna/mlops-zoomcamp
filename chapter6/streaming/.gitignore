@@ -1,0 +1,4 @@
+.env
+.pylintrc
+pyproject.toml
+testing with localstack.txt

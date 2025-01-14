@@ -1,0 +1,68 @@
+test kinesis stream
+aws kinesis put-record \
+--stream-name ${KINESIS_STREAM_INPUT} \
+--partition-key 1 \
+--cli-binary-format raw-in-base64-out \
+--data  '{"ride":{"PULocationID": 130, "DOLocationID": 205, "trip_distance": 3.66}, "ride_id": 459302002}' 
+
+
+shell function to quicken encoding added to ~/.zshrc
+function aws_b64() {
+    echo -n "$1" | base64
+}
+
+envoked as
+aws_b64 'string to encode'
+
+
+updated put-record stream
+ aws kinesis put-record \
+--stream-name ${KINESIS_STREAM_INPUT} \
+--partition-key 1 \
+--data  $(aws_b64 '{"ride":{"PULocationID": 141, "DOLocationID": 15, "trip_distance": 3.66}, "ride_id": 4594435555302002}')
+
+Viewing the output stream
+export KINESIS_STREAM_OUTPUT='ride_preds'
+export SHARD='shardId-000000000000'
+
+SHARD_ITERATOR=$(aws kinesis \
+    get-shard-iterator \
+    --shard-id ${SHARD} \
+    --shard-iterator-type TRIM_HORIZON \
+    --stream-name ${KINESIS_STREAM_OUTPUT} \
+    --query 'ShardIterator' \
+)
+
+RESULT=$(aws kinesis get-records --shard-iterator $SHARD_ITERATOR)
+
+echo ${RESULT} | jq -r '.Records[0].Data' | base64 --decode | jq
+
+# docker build config
+docker build -t stream-model-duration:v1 .
+
+#docker run config
+docker run -it --rm \
+-p 8080:8080 \
+-e PREDICTIONS_STREAM_NAME=ride_preds \
+-e RUN_ID=e308ab2a149249a4b161cb428b4abc23 \
+-e AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) \
+-e AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key) \
+-e AWS_DEFAULT_REGION=$(aws configure get region) \
+-e MODEL_LOCATION='/app/model' \
+-v $(pwd)/integration-test/model:/app/model \
+stream-model-duration:v1
+
+#aws docker registry
+aws ecr create-repository --repository-name duration-model
+
+#aws ecr login
+aws ecr get-login-password | docker login --username AWS --password-stdin 361769579073.dkr.ecr.eu-north-1.amazonaws.com/duration-model
+
+#aws pushing to ecr
+REMOTE_URI="361769579073.dkr.ecr.eu-north-1.amazonaws.com/duration-model"
+REMOTE_TAG="v1"
+REMOTE_IMAGE=${REMOTE_URI}:${REMOTE_TAG}
+
+LOCAL_IMAGE="stream-model-duration:v1"
+docker tag ${LOCAL_IMAGE} ${REMOTE_IMAGE}
+docker push ${REMOTE_IMAGE}
