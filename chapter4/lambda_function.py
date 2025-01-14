@@ -1,3 +1,4 @@
+
 import base64
 import json
 import os
@@ -18,10 +19,10 @@ AWS_REGION = session.region_name
 os.environ['AWS_S3_ENDPOINT_URL'] = f'https://s3.{AWS_REGION}.amazonaws.com'
 
 # MLflow setup
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
+MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
-RUN_ID = os.getenv("RUN_ID")
+RUN_ID = "e308ab2a149249a4b161cb428b4abc23"
 
 logged_model = f"s3://mlops-derek/1/{RUN_ID}/artifacts/model"
 model = mlflow.pyfunc.load_model(logged_model)

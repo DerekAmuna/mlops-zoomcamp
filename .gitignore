@@ -222,5 +222,6 @@ htmlcov/
 .env.dev
 
 *.b
+
 .pylintrc
 .pre-commit-config.yaml

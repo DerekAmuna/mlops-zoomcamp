@@ -1,0 +1,20 @@
+{
+  "Records": [
+      {
+          "kinesis": {
+              "kinesisSchemaVersion": "1.0",
+              "partitionKey": "1",
+              "sequenceNumber": "49659141597310609113587690333404325561454923280407330818",
+              "data": "eyJ3aW5lIjp7ImZpeGVkX2FjaWRpdHkiOiA3LjQsICJ2b2xhdGlsZV9hY2lkaXR5IjogMC43LCAiY2l0cmljX2FjaWQiOiAwLjAsICJyZXNpZHVhbF9zdWdhciI6IDEuOSwgImNobG9yaWRlcyI6IDAuMDc2LCAiZnJlZV9zdWxmdXJfZGlveGlkZSI6IDExLjAsICJ0b3RhbF9zdWxmdXJfZGlveGlkZSI6IDM0LjAsICJkZW5zaXR5IjogMC45OTc4LCAicEgiOiAzLjUxLCAic3VscGhhdGVzIjogMC41NiwgImFsY29ob2wiOiA5LjR9LCAid2luZV9pZCI6IDQ1OTMwMjAwMn0=",
+              "approximateArrivalTimestamp": 1735604710.854
+          },
+          "eventSource": "aws:kinesis",
+          "eventVersion": "1.0",
+          "eventID": "shardId-000000000000:49659141597310609113587690333404325561454923280407330818",
+          "eventName": "aws:kinesis:record",
+          "invokeIdentityArn": "arn:aws:iam::640168417711:role/iam_wine_quality_pred_model",
+          "awsRegion": "us-east-1",
+          "eventSourceARN": "arn:aws:kinesis:us-east-1:640168417711:stream/wine_events"
+      }
+  ]
+}
